@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PokeCard from "./PokeCard";
 import axios from "axios";
+import { Atom } from "react-loading-indicators";
 
 const PokeCardList = ({ data }) => {
   return (
@@ -17,6 +18,7 @@ const Feed = () => {
   const [searchTimeout, setSearchTimeout] = useState(null);
   const [searchedResults, setSearchedResults] = useState([]);
   const [pokemons, setPokemons] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const filterPokemons = (searchtext) => {
     const regex = new RegExp(searchText, "i"); //"i" flag for case-insentitive
@@ -58,11 +60,11 @@ const Feed = () => {
         );
         setPokemons(results);
         setSearchedResults(results);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching Pokémon data:", error);
       }
     };
-
     fetchPokemon();
   }, []);
 
@@ -71,14 +73,18 @@ const Feed = () => {
       <form className="relative flex-center w-full">
         <input
           type="text"
-          placeholder="Search for a tag or username"
+          placeholder="Search for a pokemon name or type"
           value={searchText}
           onChange={handleSearchChange}
           required
           className="search_input peer"
         />
       </form>
-      {searchText ? (
+      {loading ? (
+        <div className="mt-16">
+          <Atom color="#e9a50e" size="large" />
+        </div>
+      ) : searchText ? (
         <PokeCardList data={searchedResults} />
       ) : (
         <PokeCardList data={pokemons} />
